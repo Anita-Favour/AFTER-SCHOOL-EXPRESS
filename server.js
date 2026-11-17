@@ -3,7 +3,7 @@ dns.setServers(['8.8.8.8', '1.1.1.1']);
 
 require('dotenv').config();
 const express = require('express');
-const{ MongoClient, ObjectId } = require('mongodb');
+const { MongoClient, ObjectId } = require('mongodb');
 const path = require('path');
 const fs = require('fs');
 
@@ -19,6 +19,7 @@ app.use((req, res, next) => {
     next();
 });
 
+
 // Logs: prints every request to the console
 app.use((req, res, next) => {
     const time = new Date().toISOString();
@@ -29,7 +30,8 @@ app.use((req, res, next) => {
     next();
 });
 
-// Static file middleware: returns lesson images, or an error if missing
+
+// endpoint to return lesson images, or an error if missing
 app.use('/images', (req, res) => {
     const filePath = path.join(__dirname, 'images', path.basename(req.path));
     fs.access(filePath, fs.constants.F_OK, (err) => {
@@ -40,7 +42,7 @@ app.use('/images', (req, res) => {
     });
 });
 
-let db;
+var db;
 
 app.get('/', (req, res) => res.send('Backend Api active'));
 
@@ -56,7 +58,7 @@ app.get('/lessons', async (req, res) => {
 });
 
 
-// Route: save a new order
+// endpoint: save a new order
 app.post('/orders', async (req, res) => {
     try {
         const { name, phone, lessons } = req.body;
@@ -69,13 +71,14 @@ app.post('/orders', async (req, res) => {
             lessons: lessons.map(l => ({ lessonId: new ObjectId(l.lessonId), spaces: Number(l.spaces) }))
         };
         const result = await db.collection('orders').insertOne(order);
-        res.status(201).json({ message: 'Orders saved', orderId: result.insertedId });
+        res.status(201).json({ message: 'Order saved', orderId: result.insertedId });
     } catch (err) {
         res.status(500).json({ error: 'Could notsave order' });
     }
 });
 
-//Route: update ANY attribute of a lesson
+
+//endpoint: update ANY attribute of a lesson
 app.put('/lessons/:id', async (req, res) => {
     try {
         const result = await db.collection('lessons').updateOne(
@@ -89,6 +92,12 @@ app.put('/lessons/:id', async (req, res) => {
     }   catch (err) {
         res.status(500).json({ error: 'Could not update lesson' });
     }
+});
+
+
+// 404
+app.use((req, res) => {
+    res.status(404).json({ erro: 'Route not found' });
 });
 
 
