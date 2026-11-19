@@ -95,6 +95,24 @@ app.put('/lessons/:id', async (req, res) => {
 });
 
 
+// Challenge: Enrollment:GET /enrollment by lessonid
+app.get('/enrolment/:lessonid', async (req, res) => {
+    try {
+        const lessonId = new ObjectId(req.params.lessonid);
+        const orders = await db.collection('orders').find({ 'lessons.lessonId': lessonId }).toArray();
+        let enrolment = 0;
+        orders.forEach(order => {
+            order.lessons.forEach(item => {
+                if (item.lessonId.equals(lessonId)) enrolment += item.spaces;
+            });
+        });
+        res.json({ lessonId: req.params.lessonid, enrolment });
+    } catch (err) {
+        res.status(400).json({ error: 'Invalid lesson id' });
+    }
+});
+
+
 // 404
 app.use((req, res) => {
     res.status(404).json({ erro: 'Route not found' });
