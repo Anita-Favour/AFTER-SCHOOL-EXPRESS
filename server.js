@@ -163,8 +163,15 @@ app.get('/teachers/:id/lessons', async (req, res) => {
         if (!teacher) {
             return res.status(404).json({ error: 'Teacher not found' });
         }
+        // $in = find every lesson whose _id is inside the teacher's lessonsIds list
+        const lessons = await db.collection('lessons').find({ _id: { $in: teacher.lessonIds } }).toArray();
+        res.json(lessons);
+    } catch (err) {
+        res.status(400).json({ error: 'Invalid teacher id' });
     }
-})
+});
+
+
 
 
 // 404
