@@ -145,6 +145,17 @@ app.get('/search', async (req, res) => {
 });
 
 
+// Challenge: Teachers: GET /teachers -> list of all teachers
+app.get('/teachers', async (req, res) => {
+    try {
+        const teachers = await db.collection('teachers').find({}).toArray();
+        res.json(teachers);
+    } catch (err) {
+        res.status(500).json({ error: 'Could not fetch teachers' });
+    }
+});
+
+
 // 404
 app.use((req, res) => {
     res.status(404).json({ erro: 'Route not found' });
