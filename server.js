@@ -78,7 +78,7 @@ app.post('/orders', async (req, res) => {
 });
 
 
-//endpoint: update ANY attribute of a lesson
+//endpoint: update  attribute of a lesson
 app.put('/lessons/:id', async (req, res) => {
     try {
         const result = await db.collection('lessons').updateOne(
@@ -113,6 +113,22 @@ app.get('/enrolment/:lessonid', async (req, res) => {
 });
 
 
+// Challenge: Search: GET /search?q=word
+// Looks for the word in topic, location, price AND space
+app.get('/search', async (req, res) => {
+    try {
+        const q = (req.query.q || '').trim();
+
+        //empty search -> return every lesson
+        if (q === '') {
+            const all = await db.collection('lessons').find({}).toArray();
+            return res.json(all);
+        }
+
+    }
+})
+
+
 // 404
 app.use((req, res) => {
     res.status(404).json({ erro: 'Route not found' });
@@ -121,7 +137,7 @@ app.use((req, res) => {
 
 MongoClient.connect(process.env.MONGODB_URI)
 .then(client => {
-    db = client.db('afterschool');
+    db = client.db('Afterschool');
     console.log('Connected to MongoDB');
     app.listen(process.env.PORT || 3000, () => {
         console.log('Server running on port 3000');
