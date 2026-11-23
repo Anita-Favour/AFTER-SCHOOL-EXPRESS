@@ -125,8 +125,24 @@ app.get('/search', async (req, res) => {
             return res.json(all);
         }
 
+        // escape special characters (like + or ?) so they are searched as normal text
+        const safe = q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+        const lessons = await db.collection('lessons').find({
+            $or: [
+                { topic: { $regex: safe, $options: 'i' } },  // 'i' = ignore upper/lower case
+                { location: { $regex: safe, $options: 'i' } },
+                // price and space are numbers, so they will be turned to text first, then match
+                { $expr: { $regexMatch: { input: { $toString: '$price' }, regex: safe } } },
+                { $expr: { $regexMatch: { input: { $toString: '$space' }, regex: safe } } }
+            ]
+        }).toArray();
+
+        res.json(lessons);
+    } catch (err) {
+        res.status(500).json({ error: 'Search failed' });
     }
-})
+});
 
 
 // 404
