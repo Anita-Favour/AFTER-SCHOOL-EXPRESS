@@ -156,6 +156,17 @@ app.get('/teachers', async (req, res) => {
 });
 
 
+// Challenge: Teachers: GET /teachers/:id/lessons -> all lessons taught by one teacher
+app.get('/teachers/:id/lessons', async (req, res) => {
+    try {
+        const teacher = await db.collection('teachers').findOne({ _id: new ObjectId(req.params.id) });
+        if (!teacher) {
+            return res.status(404).json({ error: 'Teacher not found' });
+        }
+    }
+})
+
+
 // 404
 app.use((req, res) => {
     res.status(404).json({ erro: 'Route not found' });
