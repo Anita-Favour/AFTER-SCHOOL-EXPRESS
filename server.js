@@ -20,15 +20,8 @@ app.use((req, res, next) => {
 });
 
 
-// Logs: prints every request to the console
-app.use((req, res, next) => {
-    const time = new Date().toISOString();
-    console.log(`[${time}] ${req.method} ${req.url}`);
-    if (req.method === 'POST' || req.method === 'PUT') {
-        console.log(' Body:', JSON.stringify(req.body));
-    }
-    next();
-});
+
+
 
 
 // endpoint to return lesson images, or an error if missing
@@ -73,7 +66,7 @@ app.post('/orders', async (req, res) => {
         const result = await db.collection('orders').insertOne(order);
         res.status(201).json({ message: 'Order saved', orderId: result.insertedId });
     } catch (err) {
-        res.status(500).json({ error: 'Could notsave order' });
+        res.status(500).json({ error: 'Could not save order' });
     }
 });
 
