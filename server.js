@@ -19,7 +19,15 @@ app.use((req, res, next) => {
     next();
 });
 
-
+// Logs: prints every request to the console
+app.use((req, res, next) => {
+  const time = new Date().toISOString();
+  console.log(`[${time}] ${req.method} ${req.url}`);
+  if (req.method === 'POST' || req.method === 'PUT') {
+    console.log('  Body:', JSON.stringify(req.body));
+  }
+  next();
+});
 
 
 
